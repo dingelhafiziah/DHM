@@ -1,0 +1,6 @@
+{
+  "name": "Dingel Hafizia App",
+  "description": "Comprehensive Islamic Madrasa & Hafizia Quran Academy Management System with Student Hifz Tracker, Fees Management, Income/Expense Accounts, Due Tracking, Receipt Generator, and Reports.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
