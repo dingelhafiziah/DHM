@@ -45,6 +45,9 @@ export interface Student {
   arabicName?: string;
   department: StudentDepartment;
   residential: StudentResidential;
+
+  // Parent / Guardian details
+  fatherName?: string; // Explicit father name; kept optional for backward compatibility with existing Firebase records
   guardianName: string;
   guardianRelation: string;
   guardianPhone: string;
