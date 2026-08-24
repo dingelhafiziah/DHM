@@ -1,0 +1,77 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function userDoc() {
+      return signedIn()
+        ? get(/databases/$(database)/documents/users/$(request.auth.uid))
+        : null;
+    }
+
+    function isAdmin() {
+      return signedIn() && userDoc().data.role == 'admin';
+    }
+
+    function isTeacher() {
+      return signedIn() && userDoc().data.role == 'teacher';
+    }
+
+    // Each authenticated user may read only their own profile.
+    // Admins may manage all user profiles. Teacher creation itself will be
+    // moved to a trusted server/Admin SDK flow in the next step.
+    match /users/{uid} {
+      allow read: if signedIn() && (request.auth.uid == uid || isAdmin());
+      allow create: if isAdmin();
+      allow update, delete: if isAdmin() || request.auth.uid == uid;
+    }
+
+    // Academic/student records.
+    match /students/{docId} {
+      allow read, write: if isAdmin() || isTeacher();
+    }
+
+    match /attendance/{docId} {
+      allow read, write: if isAdmin() || isTeacher();
+    }
+
+    match /hifzLogs/{docId} {
+      allow read, write: if isAdmin() || isTeacher();
+    }
+
+    // Financial records are Admin-only.
+    match /payments/{docId} {
+      allow read, write: if isAdmin();
+    }
+
+    match /incomes/{docId} {
+      allow read, write: if isAdmin();
+    }
+
+    match /expenses/{docId} {
+      allow read, write: if isAdmin();
+    }
+
+    match /accounts/{docId} {
+      allow read, write: if isAdmin();
+    }
+
+    match /transfers/{docId} {
+      allow read, write: if isAdmin();
+    }
+
+    match /settings/{docId} {
+      allow read: if isAdmin() || isTeacher();
+      allow write: if isAdmin();
+    }
+
+    // Deny everything else by default.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
